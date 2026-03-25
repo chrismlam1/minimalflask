@@ -15,19 +15,6 @@ from flask import Flask, Response
 # Built-in default when neither CDSW_APP_PORT nor DEFAULT_CDSW_APP_PORT is set
 _BUILTIN_DEFAULT_PORT = 8090
 
-# Override via DEFAULT_CDSW_APP_PORT env (e.g. local dev) or edit _BUILTIN_DEFAULT_PORT above
-DEFAULT_CDSW_APP_PORT = int(
-    os.environ.get("DEFAULT_CDSW_APP_PORT", str(_BUILTIN_DEFAULT_PORT))
-)
-
-
-def _listen_port() -> int:
-    raw = os.environ.get("CDSW_APP_PORT")
-    if raw is not None and raw.strip() != "":
-        return int(raw)
-    return DEFAULT_CDSW_APP_PORT
-
-
 INDEX_HTML = """<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -63,5 +50,9 @@ def health() -> Response:
 
 
 if __name__ == "__main__":
-    port = _listen_port()
-    app.run(host="0.0.0.0", port=port, debug=False)
+    port = os.environ.get("CDSW_APP_PORT", _BUILTIN_DEFAULT_PORT)
+    # Has issues
+    # app.run(host="0.0.0.0", port=port, debug=False)
+    #
+    # this one works
+    app.run(host="127.0.0.1", port=port, debug=False)
